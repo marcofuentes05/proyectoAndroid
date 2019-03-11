@@ -11,11 +11,9 @@
     <string name="archivo_lisp">archivo.lisp</string>
     <string name="codigo_aqui">// Codigo Aqui</string>
     <string name="ejecutar">Ejecutar</string>
-    <string name="atras">Atras</string>
     <string name="nueva_cuenta">Nueva Cuenta</string>
-<<<<<<< HEAD
-    <string name="atras">Atras</string>
     <string name="todo">TODO</string>
-=======
->>>>>>> fa3845143cfc324c51531af844663c41aca13a34
+    <string name="atras" />
+    <string name="atras0">atras</string>
+
 </resources>
