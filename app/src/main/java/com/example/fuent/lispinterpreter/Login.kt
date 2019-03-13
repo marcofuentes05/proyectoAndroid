@@ -1,5 +1,6 @@
 package com.example.fuent.lispinterpreter
 
+import android.app.Application
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -10,23 +11,19 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 
 class Login : AppCompatActivity() {
-    private lateinit var textView3: TextView
-    private lateinit var textView: TextView
     private lateinit var usuario: EditText
     private lateinit var contrasena: EditText
     private lateinit var progressBar: ProgressBar
     private lateinit var auth: FirebaseAuth
-    private lateinit var login: Button
-    private lateinit var nuevoUsuario: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        FirebaseApp.initializeApp(this)
         usuario=findViewById(R.id.usuario)
         contrasena=findViewById(R.id.contrasena)
         progressBar=findViewById(R.id.progressBar2)
         auth= FirebaseAuth.getInstance()
+
     }
     fun crear(view: View){
         startActivity(Intent(this, NuevoUsuario::class.java))
@@ -46,13 +43,16 @@ class Login : AppCompatActivity() {
                     .addOnCompleteListener(this){
                         task ->
                         if(task.isSuccessful){
+                            (this.application as MyApplication).setUser(user)
                             action()
-                        }else{
-                            Toast.makeText(this,"Error en l a autenticacion", Toast.LENGTH_LONG).show()
 
+                        }else{
+                            Toast.makeText(this,"No se pudo iniciar sesion...", Toast.LENGTH_LONG).show()
+                            progressBar.visibility=View.INVISIBLE
                         }
                     }
         }
+
     }
 
     private fun action(){
