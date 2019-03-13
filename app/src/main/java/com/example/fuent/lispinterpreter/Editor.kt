@@ -1,7 +1,10 @@
 package com.example.fuent.lispinterpreter
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import io.github.kbiakov.codeview.CodeView
 import io.github.kbiakov.codeview.adapters.Options
 import io.github.kbiakov.codeview.classifier.CodeProcessor
@@ -49,5 +52,14 @@ class Editor : AppCompatActivity() {
                 .withLanguage("java")
                 .withCode(codigo_java)
                 .withTheme(ColorTheme.MONOKAI))
+    }
+
+    fun back(view: View){
+        var intent = Intent(this, Archivos::class.java)
+        startActivity(intent)
+    }
+
+    fun execute (view:View){
+        Toast.makeText(this, "Funcionalidad pendiente...", Toast.LENGTH_LONG).show()
     }
 }

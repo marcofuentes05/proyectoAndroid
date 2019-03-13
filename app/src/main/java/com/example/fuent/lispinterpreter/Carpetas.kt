@@ -27,6 +27,12 @@ class Carpetas : AppCompatActivity() {
         var user = (this.application as MyApplication).getUser()
         var listaI : ArrayList<String> = arrayListOf()
 
+
+        lista.onItemClickListener = AdapterView.OnItemClickListener { arg0, arg1, position, arg3 ->
+            val intent = Intent(this, Archivos::class.java)
+            startActivity(intent)
+        }
+
         try{
             dbCollection.collection("usuarios").whereEqualTo("correo",user).limit(1).get().addOnCompleteListener(){
                 task->
