@@ -41,11 +41,22 @@ class NuevaCarpeta : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val document = task.result
                     if (document!= null) {
-                        var u0 = document.toObject(Usuario :: class.java)
+                        var u0 = document.toObjects(Usuario :: class.java)[0].listaCarpeta
+                        u0.add(Carpeta(nameText.toString(),arrayListOf()))
 
                         //u0!!.listaCarpeta.add(Carpeta(nameText.text.toString(),arrayListOf()))
 
-                        dbCollection.collection("usuarios").document(auth.uid!!).set(u0!!.toMap())
+                        var dbRef =dbCollection.collection("usuarios").document()
+
+                        dbRef.update("listaCarpeta",u0.toList()).addOnCompleteListener(this) {
+                            task ->
+                            if (task.isSuccessful){
+                                Toast.makeText(this, "Carpeta agregada",Toast.LENGTH_LONG).show()
+                            }else{
+                                Toast.makeText(this,"No se pudo agregar la carpeta", Toast.LENGTH_LONG).show()
+                            }
+
+                        }
 
                         var intent = Intent(this, Carpetas::class.java)
                         startActivity(intent)
@@ -64,7 +75,7 @@ class NuevaCarpeta : AppCompatActivity() {
                     Toast.makeText(this, "Fallo con ${task.exception}", Toast.LENGTH_LONG).show()
                 }
             }
-        }
+        }catch(e:Exception){}
     }
 
 
@@ -72,4 +83,9 @@ class NuevaCarpeta : AppCompatActivity() {
         val intent = Intent(this, Carpetas :: class.java)
         startActivity(intent)
     }
+
+    /**fun arrayToMap(c : ArrayList<Carpeta>): HashMap<String, String>{
+        var res = HashMap<String, String>()
+
+    }**/
 }

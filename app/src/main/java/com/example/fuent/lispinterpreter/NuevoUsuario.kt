@@ -65,13 +65,25 @@ class NuevoUsuario : AppCompatActivity() {
                 task ->
 
                 if (task.isComplete){
+
                     val user: FirebaseUser? = auth.currentUser
                     verifyEmail(user)
-                    val userBD = dbReference0.child(user?.uid!!)
+
+                    val user0 = Usuario(name, email, password, ArrayList<Carpeta>()).toMap()
+
+                    database.collection("usuarios")
+                            .add(user0)
+                            .addOnSuccessListener { documentReference ->
+                                Toast.makeText(this,"Usuario agregado a BD",Toast.LENGTH_LONG).show()
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(this,"Usuario no ha sido agregado",Toast.LENGTH_LONG).show()
+                            }
+                    /**val userBD = database0.child(user?.uid!!)
                     userBD.child("Name").setValue(name)
                     userBD.child("User").setValue(user)
                     userBD.child("Email").setValue(email)
-                    userBD.child("Password").setValue(password)
+                    userBD.child("Password").setValue(password)**/
                     progressBar.visibility=View.INVISIBLE
                     action()
                 }else{
@@ -80,17 +92,6 @@ class NuevoUsuario : AppCompatActivity() {
 
 
             }
-
-            val user0 = Usuario(name, email, password, ArrayList<Carpeta>()).toMap()
-
-            database.collection("usuarios")
-                    .add(user0)
-                    .addOnSuccessListener { documentReference ->
-                        Toast.makeText(this,"Usuario agregado a BD",Toast.LENGTH_LONG).show()
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(this,"Usuario no ha sido agregado",Toast.LENGTH_LONG).show()
-                    }
 
         }
     }
@@ -103,9 +104,11 @@ class NuevoUsuario : AppCompatActivity() {
                 ?.addOnCompleteListener(this){
                     task ->
                     if(task.isComplete){
-                        Toast.makeText(this,"Correo enviado",Toast.LENGTH_LONG).show()
-                    }else{Toast.makeText(this,"Error al enviar correo",Toast.LENGTH_LONG).show()
 
+                        Toast.makeText(this,"Correo enviado",Toast.LENGTH_LONG).show()
+
+                    }else{
+                        Toast.makeText(this,"Error al enviar correo",Toast.LENGTH_LONG).show()
                     }
                 }
 
