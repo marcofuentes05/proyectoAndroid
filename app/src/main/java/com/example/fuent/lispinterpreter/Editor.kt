@@ -57,9 +57,11 @@ class Editor : AppCompatActivity() {
     fun back(view: View){
         var intent = Intent(this, Archivos::class.java)
         startActivity(intent)
+        finish()
     }
 
     fun execute (view:View){
         Toast.makeText(this, "Funcionalidad pendiente...", Toast.LENGTH_LONG).show()
+        finish()
     }
 }

@@ -38,14 +38,13 @@ class Login : AppCompatActivity() {
 
         if(!TextUtils.isEmpty(user) &&!TextUtils.isEmpty(password)){
             progressBar.visibility=View.VISIBLE
-
             auth.signInWithEmailAndPassword(user,password)
                     .addOnCompleteListener(this){
                         task ->
                         if(task.isSuccessful){
                             (this.application as MyApplication).setUser(user)
                             action()
-
+                            finish()
                         }else{
                             Toast.makeText(this,"No se pudo iniciar sesion...", Toast.LENGTH_LONG).show()
                             progressBar.visibility=View.INVISIBLE

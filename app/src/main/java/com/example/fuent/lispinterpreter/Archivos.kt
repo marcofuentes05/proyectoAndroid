@@ -3,11 +3,13 @@ package com.example.fuent.lispinterpreter
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ListView
-import android.widget.Toast
+import android.widget.*
+import com.example.fuent.lispinterpreter.Adapters.RecyclerViewAdaptadorArchivo
+import com.example.fuent.lispinterpreter.Adapters.RecyclerViewAdaptadorCarpeta
+import com.example.fuent.lispinterpreter.Carpetas.Companion.EXTRA_CARPETA_ID
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -17,44 +19,75 @@ class Archivos : AppCompatActivity() {
     lateinit var dbCollection : FirebaseFirestore
     lateinit var auth : FirebaseAuth
 
+    lateinit var recyclerView : RecyclerView
+    lateinit var recyclerViewAdapter : RecyclerViewAdaptadorArchivo
+
+    lateinit var listaArchivos : ArrayList<Archivo>
+
+    var id_carpeta : String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_archivos)
+        id_carpeta =intent.getStringExtra(EXTRA_CARPETA_ID)
 
-        dbCollection = FirebaseFirestore.getInstance()
+        recyclerView = findViewById(R.id.recyclerArchivos)
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
-        var lista: ListView = findViewById(R.id.lista)
+        listaArchivos = obtenerArchivos()
 
-        var listaI: ArrayList<String> = arrayListOf()
+        var nombre : TextView = findViewById(R.id.nombreCarpeta)
+        nombre.text = id_carpeta
+    }
 
-        var user = (this.application as MyApplication).getUser()
+    private fun obtenerArchivos(): ArrayList<Archivo> {
+        val db = FirebaseFirestore.getInstance()
+        var lista: ArrayList<Archivo> = arrayListOf()
 
-        dbCollection.collection("usuarios").whereEqualTo("correo",user).limit(1).get().addOnCompleteListener(){
-            task->
-            if (task.isSuccessful){
-                val document = task.result
-                if (document != null){
-                    var u0 = document.toObjects(Usuario :: class.java)[0].listaCarpeta[0].codigos
-                    var u : ArrayList<String> = arrayListOf()
-                    for (i in u0){
-                        u.add(i.nombre)
+        db.collection("carpetas").document(id_carpeta).get()
+                .addOnSuccessListener {result->
+                    var lst : ArrayList<String> = arrayListOf()
+
+                    var res = result["codigos"].toString()
+                    var res0 = res.substring(1,res.length-1)
+                    var res1 = res0.split(", ")
+
+                    lst = listToArrayList(res1)
+
+                    val db0 = FirebaseFirestore.getInstance()
+                    if (!lst.isEmpty()){
+                        for (elemento in lst){
+                            db0.collection("archivos").document(elemento).get().addOnSuccessListener {
+                                res->
+                                lista.add(Archivo(res["nombre"].toString(),res["autor"].toString(),res["script"].toString()))
+
+                                recyclerViewAdapter = RecyclerViewAdaptadorArchivo(lista)
+                                recyclerView.adapter = recyclerViewAdapter
+                                Toast.makeText(this, "Mision Cumplida", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }else{
+                        Toast.makeText(this, "Carpeta vacía", Toast.LENGTH_SHORT).show()
                     }
 
-                    val adapter : ArrayAdapter<String> = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, u)
-                    lista.adapter=adapter
+                }.addOnFailureListener{
+                    Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
                 }
-            }
-        }
 
-        lista.onItemClickListener = AdapterView.OnItemClickListener { arg0, arg1, position, arg3 ->
-            val intent = Intent(this, Editor::class.java)
-            startActivity(intent)
-        }
-
+        return lista
     }
 
     fun back(view: View){
         val intent = Intent(this,Carpetas::class.java)
         startActivity(intent)
+        finish()
+    }
+
+    fun listToArrayList(lista : List<String>):ArrayList<String>{
+        var res : ArrayList<String> = arrayListOf()
+        for (i in lista){
+            res.add(i)
+        }
+        return res
     }
 }

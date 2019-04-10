@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat.startActivity
 import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 
 
@@ -27,65 +28,76 @@ class NuevaCarpeta : AppCompatActivity() {
     private lateinit var dbCollection : FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_nueva_carpeta)
+
         nameText = findViewById(R.id.nameText)
+
         dbCollection = FirebaseFirestore.getInstance()
+
         auth= FirebaseAuth.getInstance()
     }
 
     fun save (view : View){
-       // var carpeta = Carpeta(nameText.toString(), ArrayList<Lisp>()).toMap()
-        try{
-            dbCollection.collection("usuarios").whereEqualTo("correo", (this.application as MyApplication).getUser()).limit(1).get().addOnCompleteListener { task->
-                if (task.isSuccessful) {
-                    val document = task.result
-                    if (document!= null) {
-                        var u0 = document.toObjects(Usuario :: class.java)[0].listaCarpeta
-                        u0.add(Carpeta(nameText.toString(),arrayListOf()))
-
-                        //u0!!.listaCarpeta.add(Carpeta(nameText.text.toString(),arrayListOf()))
-
-                        var dbRef =dbCollection.collection("usuarios").document()
-
-                        dbRef.update("listaCarpeta",u0.toList()).addOnCompleteListener(this) {
-                            task ->
-                            if (task.isSuccessful){
-                                Toast.makeText(this, "Carpeta agregada",Toast.LENGTH_LONG).show()
-                            }else{
-                                Toast.makeText(this,"No se pudo agregar la carpeta", Toast.LENGTH_LONG).show()
-                            }
-
-                        }
-
-                        var intent = Intent(this, Carpetas::class.java)
-                        startActivity(intent)
-                    } else {
-
-                        //   Log.d(FragmentActivity.TAG, "No such document")
-                        Toast.makeText(this, "No existe el documento", Toast.LENGTH_LONG).show()
-                        var u = Usuario("Marco","fua18188","Marco",arrayListOf())
-                        //u.addCarpeta(Carpeta("Prueba", arrayListOf()))
-                        var map = u.toMap()
-                        dbCollection.collection("usuarios").document(auth.uid!!).set(map)
-                        //TODO solucionar esto
+        if (nameText.text != null && nameText.text.toString() != ""){
+            var nombre = nameText.text.toString()
+            var list : ArrayList<String> = arrayListOf()
+            var autor = ""
+            var bd = FirebaseFirestore.getInstance()
+            bd.collection("usuarios").whereEqualTo("correo",(this.application as MyApplication).getUser()).get()
+                    .addOnSuccessListener { result->
+                        autor = result.documents[0]["nombre"].toString()
+                        var db0 = FirebaseFirestore.getInstance()
+                        var carpetaT = Carpeta(nombre,list,autor,result.documents[0].id)
+                        db0.collection("carpetas").add(carpetaT.toMap())
+                                .addOnSuccessListener {generatedDoc ->
+                                    var db1 = FirebaseFirestore.getInstance()
+                                    db1.collection("usuarios").whereEqualTo("correo",(this.application as MyApplication).getUser())
+                                            .get().addOnSuccessListener {result ->
+                                                var p0 = result.documents[0]["carpetas"].toString()
+                                                var p1 = p0.substring(1,p0.length-1)
+                                                //Ya tengo una lista con las direcciones de cada carpeta
+                                                var p = p1.split(", ")
+                                                var newList = listToArrayList(p)
+                                                var a = result.documents[0].id
+                                                //Agrego el id del documento que acabo de generar a la lista de referencias
+                                                val genID = generatedDoc.id
+                                                newList.add(genID)
+                                                db1.collection("usuarios").document(a).update("carpetas",newList as List<String>)
+                                                back()
+                                            }
+                                }.addOnFailureListener{
+                                    Toast.makeText(this,"No es posible realizar la operacion en este momento", Toast.LENGTH_LONG).show()
+                                    back()
+                                }
+                    }.addOnFailureListener{
+                        Toast.makeText(this,"No es posible realizar la operacion en este momento", Toast.LENGTH_LONG).show()
+                        back()
                     }
-                } else {
-                    // Log.d(FragmentActivity.TAG, "get failed with ", task.exception)
-                    Toast.makeText(this, "Fallo con ${task.exception}", Toast.LENGTH_LONG).show()
-                }
-            }
-        }catch(e:Exception){}
+        }else{
+            Toast.makeText(this,"Tiene que haber un nombre especificado", Toast.LENGTH_LONG).show()
+        }
     }
-
 
     fun back (view: View){
         val intent = Intent(this, Carpetas :: class.java)
         startActivity(intent)
+        finish()
     }
 
-    /**fun arrayToMap(c : ArrayList<Carpeta>): HashMap<String, String>{
-        var res = HashMap<String, String>()
+    fun back (){
+        val intent = Intent(this, Carpetas :: class.java)
+        startActivity(intent)
+        finish()
+    }
 
-    }**/
+    fun listToArrayList(lista : List<String>):ArrayList<String>{
+        var res : ArrayList<String> = arrayListOf()
+        for (i in lista){
+            res.add(i)
+        }
+        return res
+    }
 }
