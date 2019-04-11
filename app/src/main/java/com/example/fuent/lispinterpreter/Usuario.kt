@@ -11,7 +11,7 @@ class Usuario( var nombre: String, var correo: String, var contrasena: String, v
         res["nombre"] = nombre
         res["correo"] = correo
         res["contrasena"] = contrasena
-        res ["listaCarpeta"] = listaCarpeta
+        res ["carpetas"] = listaCarpeta
         return res
     }
 

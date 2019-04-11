@@ -15,10 +15,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class Archivos : AppCompatActivity() {
 
-    lateinit var db : FirebaseFirestore
-    lateinit var dbCollection : FirebaseFirestore
-    lateinit var auth : FirebaseAuth
-
     lateinit var recyclerView : RecyclerView
     lateinit var recyclerViewAdapter : RecyclerViewAdaptadorArchivo
 
@@ -36,8 +32,12 @@ class Archivos : AppCompatActivity() {
 
         listaArchivos = obtenerArchivos()
 
+        val instance = FirebaseFirestore.getInstance()
         var nombre : TextView = findViewById(R.id.nombreCarpeta)
-        nombre.text = id_carpeta
+        instance.collection("carpetas").document(id_carpeta).get().addOnSuccessListener { res->
+            nombre.text = res["nombre"].toString()
+        }
+
     }
 
     private fun obtenerArchivos(): ArrayList<Archivo> {
@@ -48,28 +48,31 @@ class Archivos : AppCompatActivity() {
                 .addOnSuccessListener {result->
                     var lst : ArrayList<String> = arrayListOf()
 
-                    var res = result["codigos"].toString()
+                    var res = result["archivos"].toString()
+
                     var res0 = res.substring(1,res.length-1)
                     var res1 = res0.split(", ")
 
                     lst = listToArrayList(res1)
 
-                    val db0 = FirebaseFirestore.getInstance()
-                    if (!lst.isEmpty()){
+                    println(lst)
+                    if(lst[0]!="ul"){
                         for (elemento in lst){
-                            db0.collection("archivos").document(elemento).get().addOnSuccessListener {
-                                res->
-                                lista.add(Archivo(res["nombre"].toString(),res["autor"].toString(),res["script"].toString()))
+                            val db0 = FirebaseFirestore.getInstance()
+                            db0.collection("archivos").document(elemento).get()
+                                    .addOnSuccessListener {
+                                        res->
+                                        lista.add(Archivo(res["nombre"].toString(),res["autor"].toString(),res["script"].toString(),res.id))
 
-                                recyclerViewAdapter = RecyclerViewAdaptadorArchivo(lista)
-                                recyclerView.adapter = recyclerViewAdapter
-                                Toast.makeText(this, "Mision Cumplida", Toast.LENGTH_SHORT).show()
-                            }
+                                        Toast.makeText(this, "Mision Cumplida", Toast.LENGTH_SHORT).show()
+
+                                        recyclerViewAdapter = RecyclerViewAdaptadorArchivo(lista)
+                                        recyclerView.adapter = recyclerViewAdapter
+                                    }
                         }
                     }else{
                         Toast.makeText(this, "Carpeta vacía", Toast.LENGTH_SHORT).show()
                     }
-
                 }.addOnFailureListener{
                     Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
                 }
@@ -89,5 +92,11 @@ class Archivos : AppCompatActivity() {
             res.add(i)
         }
         return res
+    }
+
+    fun compartir (view:View){
+        var intent = Intent(this, compartirCarpeta :: class.java)
+        intent.putExtra(EXTRA_CARPETA_ID,id_carpeta)
+        startActivity(intent)
     }
 }

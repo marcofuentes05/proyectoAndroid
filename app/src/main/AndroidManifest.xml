@@ -10,7 +10,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".NuevaCarpeta"></activity>
+        <activity android:name=".compartirCarpeta"></activity>
+        <activity android:name=".OlvidoContraActivity" />
+        <activity android:name=".NuevaCarpeta" />
         <activity android:name=".SplashActivity" />
         <activity android:name=".Execute" />
         <activity android:name=".Login">
@@ -24,6 +26,10 @@
         <activity android:name=".Editor" />
         <activity android:name=".Archivos" />
         <activity android:name=".Carpetas" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NuevaCarpeta">
+    tools:context=".NuevaCarpeta"
+    android:background="@drawable/ic_launcher_background">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -26,7 +27,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.29"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:fontFamily="@font/atma_semibold"
+            android:textColor="@color/white"/>
 
         <EditText
             android:id="@+id/nameText"
@@ -62,7 +65,9 @@
             app:layout_constraintHorizontal_bias="0.987"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/nameText"
-            app:layout_constraintVertical_bias="0.426" />
+            app:layout_constraintVertical_bias="0.426"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white"/>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -1,14 +1,15 @@
 package com.example.fuent.lispinterpreter.Adapters
 
+import android.content.Intent
 import android.support.annotation.LayoutRes
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.example.fuent.lispinterpreter.Archivo
-import com.example.fuent.lispinterpreter.Carpeta
-import com.example.fuent.lispinterpreter.R
+import com.example.fuent.lispinterpreter.*
+import com.example.fuent.lispinterpreter.Carpetas.Companion.EXTRA_ARCHIVO_ID
 
 class RecyclerViewAdaptadorArchivo: RecyclerView.Adapter<RecyclerViewAdaptadorArchivo.ViewHolder>{
 
@@ -44,5 +45,11 @@ class RecyclerViewAdaptadorArchivo: RecyclerView.Adapter<RecyclerViewAdaptadorAr
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.name.text = listaArchivos[position].nombre
         holder.author.text = listaArchivos[position].autor
+
+        holder.view.setOnClickListener{
+            var intent = Intent(holder.view.context, Editor :: class.java)
+            intent.putExtra(EXTRA_ARCHIVO_ID,listaArchivos.get(position).script_id)
+            holder.view.context.startActivity(intent)
+        }
     }
 }
