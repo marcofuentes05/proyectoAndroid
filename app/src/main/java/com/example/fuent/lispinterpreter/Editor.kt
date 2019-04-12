@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import com.example.fuent.lispinterpreter.lispI.Atomo
 import com.example.fuent.lispinterpreter.lispI.Errores.*
 import com.example.fuent.lispinterpreter.lispI.LispInterpreter
+import com.google.firebase.firestore.FirebaseFirestore
 import io.github.kbiakov.codeview.CodeView
 import io.github.kbiakov.codeview.adapters.Options
 import io.github.kbiakov.codeview.classifier.CodeProcessor
@@ -31,20 +33,36 @@ class Editor : AppCompatActivity() {
 
         var codeView: CodeView = findViewById(R.id.code_view)
 
+        //Para cargar archivo de FB
+        //code_id =intent.getStringExtra(Carpetas.EXTRA_CARPETA_ID)
+        //val instance = FirebaseFirestore.getInstance()
+        //var codigo_lisp = ""
+        //var nombre : TextView = findViewById(R.id.nameLisp)
+        //instance.collection("archivos").document(code_id).get().addOnSuccessListener { res->
+          //  codigo_lisp = res["script"].toString()
+            //println("El codigo almacenado en firestore es: $codigo_lisp")
+        //}.addOnFailureListener{
+          //  Toast.makeText(this, "Hubieron errores y no fue posible obtener el codigo", Toast.LENGTH_LONG).show()
+        //}
+
+
+
         var codigo_java = "(+ 1 2 3 4 6) \n" +
                 "(+ 1 1) \n"  +
                 "(* 4 7) \n" +
                 "(/ 200 3) \n" +
-                "(- 234 543) \n"
+                "(- 234 543) \n" +
+                "(- 1 2)"
 
         codeView.setOptions(Options.Default.get(this)
                 .withLanguage("java")
+                //.withCode(codigo_lisp)
                 .withCode(codigo_java)
                 .withTheme(ColorTheme.MONOKAI))
 
 
         var code = codigo_java
-        var cod = codigo_java
+        //var cod = codigo_lisp
         var interpretado = ""
         val interpreter = LispInterpreter()
 
@@ -56,29 +74,33 @@ class Editor : AppCompatActivity() {
             Toast.makeText(this, parts.toString(), Toast.LENGTH_LONG).show()
 
             var n = 0
-            for(i in parts){
+            for (i in parts) {
                 try {
 
                     val atomoAEvaluar = interpreter.parsearExpresion(parts[n], false, false)
-                    interpretado += interpreter.evaluar(atomoAEvaluar).toString() + "\n"
+                    if(atomoAEvaluar.toString() != "NIL") {
+                        interpretado += interpreter.evaluar(atomoAEvaluar).toString() + "\n"
+                    }
                     n += 1
-                }catch (error: Error_ExpresionMalBalanceada){
+                } catch (error: Error_ExpresionMalBalanceada) {
                     Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
-                }catch (error: Error_OperacionNoExistente){
+                } catch (error: Error_OperacionNoExistente) {
                     Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
-                }catch (error: Error_OperandosIncorrectos){
+                } catch (error: Error_OperandosIncorrectos) {
                     Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
-                }catch (error: Error_OutOfIndex){
+                } catch (error: Error_OutOfIndex) {
                     Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
-                }catch (error: Error_ParametrosIncorrectos){
+                } catch (error: Error_ParametrosIncorrectos) {
                     Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
-                }catch (error: Error_FuncionYaImplementada){
+                } catch (error: Error_FuncionYaImplementada) {
                     Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
                 }
                 Toast.makeText(this, interpretado, Toast.LENGTH_LONG).show()
 
             }
-
         }
+
+
     }
 }
+
