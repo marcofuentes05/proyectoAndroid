@@ -38,9 +38,6 @@ class Carpetas : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         listaCarpetas = obtenerCarpetas()
-
-        /**recyclerViewAdapter = RecyclerViewAdaptadorCarpeta(listaCarpetas)
-        recyclerView.adapter = recyclerViewAdapter*/
     }
 
     fun obtenerCarpetas():ArrayList<Carpeta>{
@@ -66,14 +63,10 @@ class Carpetas : AppCompatActivity() {
 
                             recyclerViewAdapter = RecyclerViewAdaptadorCarpeta(lista)
                             recyclerView.adapter = recyclerViewAdapter
-                            Toast.makeText(this, "SI se pudo bro :D ", Toast.LENGTH_SHORT).show()
+                            //Toast.makeText(this, "SI se pudo bro :D ", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
-                .addOnFailureListener{
-                    Toast.makeText(this,"No se pudo bro :( ",Toast.LENGTH_SHORT).show()
-                }
-        Toast.makeText(this,"You rock :D ",Toast.LENGTH_SHORT).show()
         return lista
     }
 

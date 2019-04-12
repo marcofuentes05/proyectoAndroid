@@ -64,7 +64,7 @@ class Archivos : AppCompatActivity() {
                                         res->
                                         lista.add(Archivo(res["nombre"].toString(),res["autor"].toString(),res["script"].toString(),res.id))
 
-                                        Toast.makeText(this, "Mision Cumplida", Toast.LENGTH_SHORT).show()
+//                                        Toast.makeText(this, "Mision Cumplida", Toast.LENGTH_SHORT).show()
 
                                         recyclerViewAdapter = RecyclerViewAdaptadorArchivo(lista)
                                         recyclerView.adapter = recyclerViewAdapter
