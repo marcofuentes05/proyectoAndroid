@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".compartirCarpeta">
+    tools:context=".compartirCarpeta"
+    android:background="@drawable/ic_launcher_background">
 
     <TextView
         android:id="@+id/textView6"
@@ -20,7 +21,9 @@
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:fontFamily="@font/atma_semibold"
+        android:textColor="@color/white"/>
 
     <EditText
         android:id="@+id/correo"
@@ -40,7 +43,7 @@
 
     <Button
         android:id="@+id/compartirButton"
-        android:layout_width="wrap_content"
+        android:layout_width="108dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
@@ -48,13 +51,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
+        android:background="@color/colorPrimary"
+        android:onClick="share"
         android:text="Compartir"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/correo"
-        android:onClick="share"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/correo" />
 
 </android.support.constraint.ConstraintLayout>

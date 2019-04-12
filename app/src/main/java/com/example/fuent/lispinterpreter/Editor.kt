@@ -28,47 +28,26 @@ class Editor : AppCompatActivity() {
 
         val instance = FirebaseFirestore.getInstance()
         var codigo_lisp = ""
-        var nombre : TextView = findViewById(R.id.nombreCarpeta)
+        var nombre : TextView = findViewById(R.id.nameLisp)
         instance.collection("archivos").document(code_id).get().addOnSuccessListener { res->
             codigo_lisp = res["script"].toString()
-        }
 
-        var codigo_java = "package com.example.fuent.lispinterpreter\n" +
-                "\n" +
-                "import android.support.v7.app.AppCompatActivity\n" +
-                "import android.os.Bundle\n" +
-                "import io.github.kbiakov.codeview.CodeView\n" +
-                "import io.github.kbiakov.codeview.adapters.Options\n" +
-                "import io.github.kbiakov.codeview.classifier.CodeProcessor\n" +
-                "import io.github.kbiakov.codeview.highlight.ColorTheme\n" +
-                "\n" +
-                "class Editor : AppCompatActivity() {\n" +
-                "\n" +
-                "    override fun onCreate(savedInstanceState: Bundle?) {\n" +
-                "        // train classifier on app start\n" +
-                "        CodeProcessor.init(this)\n" +
-                "\n" +
-                "        super.onCreate(savedInstanceState)\n" +
-                "        setContentView(R.layout.activity_editor)\n" +
-                "\n" +
-                "        var codeView : CodeView = findViewById(R.id.code_view)\n" +
-                "\n" +
-                "        var codigo_java = \"\"\n" +
-                "        codeView.setOptions(Options.Default.get(this)\n" +
-                "                .withLanguage(\"java\")\n" +
-                "                .withCode(\"(setq arbol '(1 . ((2 . 3) . (4 . 5))))\")\n" +
-                "                .withTheme(ColorTheme.MONOKAI))\n" +
-                "    }\n" +
-                "}\n"
-        codeView.setOptions(Options.Default.get(this)
-                .withLanguage("lisp")
-                .withCode(codigo_lisp)
-                .withTheme(ColorTheme.MONOKAI))
+            var t = "\\n".trimIndent()
+
+            var string = codigo_lisp.replace(t,"\n")
+
+            println(string)
+            codeView.setOptions(Options.get(this)
+                    .withLanguage("lisp")
+                    .withCode(string)
+                    .withTheme(ColorTheme.MONOKAI))
+            Toast.makeText(this, "Codigo recibido", Toast.LENGTH_LONG).show()
+        }.addOnFailureListener{
+            Toast.makeText(this, "Hubieron errores y no fue posible obtener el codigo", Toast.LENGTH_LONG).show()
+        }
     }
 
     fun back(view: View){
-        var intent = Intent(this, Archivos::class.java)
-        startActivity(intent)
         finish()
     }
 
@@ -78,8 +57,6 @@ class Editor : AppCompatActivity() {
     }
 
     override fun onBackPressed(){
-        var intent = Intent(this, Archivos::class.java)
-        startActivity(intent)
         finish()
     }
 }
