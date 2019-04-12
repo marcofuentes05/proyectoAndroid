@@ -18,11 +18,19 @@ import io.github.kbiakov.codeview.classifier.CodeProcessor
 import io.github.kbiakov.codeview.highlight.ColorTheme
 import java.io.BufferedReader
 import java.io.FileReader
+import java.lang.Exception
 import java.util.ArrayList
 import java.util.HashMap
 
 class Editor : AppCompatActivity() {
 
+    fun back(view:View){
+        finish()
+    }
+
+    override fun onBackPressed() {
+        finish()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // train classifier on app start
@@ -34,34 +42,23 @@ class Editor : AppCompatActivity() {
         var codeView: CodeView = findViewById(R.id.code_view)
 
         //Para cargar archivo de FB
-        //code_id =intent.getStringExtra(Carpetas.EXTRA_CARPETA_ID)
-        //val instance = FirebaseFirestore.getInstance()
-        //var codigo_lisp = ""
-        //var nombre : TextView = findViewById(R.id.nameLisp)
-        //instance.collection("archivos").document(code_id).get().addOnSuccessListener { res->
-          //  codigo_lisp = res["script"].toString()
-            //println("El codigo almacenado en firestore es: $codigo_lisp")
-        //}.addOnFailureListener{
-          //  Toast.makeText(this, "Hubieron errores y no fue posible obtener el codigo", Toast.LENGTH_LONG).show()
-        //}
-
-
-
-        var codigo_java = "(+ 1 2 3 4 6) \n" +
-                "(+ 1 1) \n"  +
-                "(* 4 7) \n" +
-                "(/ 200 3) \n" +
-                "(- 234 543) \n" +
-                "(- 1 2)"
-
-        codeView.setOptions(Options.Default.get(this)
-                .withLanguage("java")
-                //.withCode(codigo_lisp)
-                .withCode(codigo_java)
-                .withTheme(ColorTheme.MONOKAI))
-
-
-        var code = codigo_java
+        var code_id =intent.getStringExtra(Carpetas.EXTRA_ARCHIVO_ID)
+        val instance = FirebaseFirestore.getInstance()
+        var codigo_lisp = ""
+        var nombre : TextView = findViewById(R.id.nameLisp)
+        instance.collection("archivos").document(code_id).get().addOnSuccessListener { res->
+        codigo_lisp = res["script"].toString()
+            println("El codigo almacenado en firestore es: $codigo_lisp")
+            var t ="\\n".trimIndent()
+            var temp = codigo_lisp.replace(t,"\n")
+            codeView.setOptions(Options.Default.get(this)
+                    .withLanguage("lisp")
+                    //.withCode(codigo_lisp)
+                    .withCode(temp)
+                    .withTheme(ColorTheme.MONOKAI))
+        }.addOnFailureListener{
+            Toast.makeText(this, "Hubieron errores y no fue posible obtener el codigo", Toast.LENGTH_LONG).show()
+        }
         //var cod = codigo_lisp
         var interpretado = ""
         val interpreter = LispInterpreter()
@@ -69,34 +66,22 @@ class Editor : AppCompatActivity() {
         val ejBtn = findViewById<Button>(R.id.ejecutar)
 
         ejBtn.setOnClickListener {
-            val se = code.replace("\n", "sep")
+            val se = codigo_lisp.replace("\\n", "sep")
             val parts = se.split("sep")
-            Toast.makeText(this, parts.toString(), Toast.LENGTH_LONG).show()
+            //Toast.makeText(this, parts.toString(), Toast.LENGTH_LONG).show()
 
             var n = 0
             for (i in parts) {
                 try {
 
+
                     val atomoAEvaluar = interpreter.parsearExpresion(parts[n], false, false)
                     if(atomoAEvaluar.toString() != "NIL") {
                         interpretado += interpreter.evaluar(atomoAEvaluar).toString() + "\n"
                     }
+                    Toast.makeText(this, interpretado, Toast.LENGTH_LONG).show()
                     n += 1
-                } catch (error: Error_ExpresionMalBalanceada) {
-                    Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
-                } catch (error: Error_OperacionNoExistente) {
-                    Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
-                } catch (error: Error_OperandosIncorrectos) {
-                    Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
-                } catch (error: Error_OutOfIndex) {
-                    Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
-                } catch (error: Error_ParametrosIncorrectos) {
-                    Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
-                } catch (error: Error_FuncionYaImplementada) {
-                    Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
-                }
-                Toast.makeText(this, interpretado, Toast.LENGTH_LONG).show()
-
+                } catch (e: Exception){ }
             }
         }
 
