@@ -100,4 +100,10 @@ class NuevaCarpeta : AppCompatActivity() {
         }
         return res
     }
+
+    override fun onBackPressed() {
+        var intent = Intent(this, Carpetas :: class.java)
+        startActivity(intent)
+        finish()
+    }
 }
